@@ -114,15 +114,15 @@ def getContent(url):
     print("评分人数："+scoreNum)
     print("上映时间："+dalu)
     if htmltxet.find("span", attrs={"class": "stonefont"}) != None:
-        pingfen1 = htmltxet.find("span", attrs={"class": "stonefont"}).text
+        pingfen = htmltxet.find("span", attrs={"class": "stonefont"}).text
     else:
-        pingfen1 = '暂无'
+        pingfen = '暂无'
     if htmltxet.find("div",attrs={"class":"movie-index-content box"}) != None:
-        pioafang=htmltxet.find("div",attrs={"class":"movie-index-content box"}).text
+        bofang=htmltxet.find("div",attrs={"class":"movie-index-content box"}).text
     else:
         pioafang = '暂无'
-    print("票房：",pioafang.strip())
-    print("播放量：",pingfen1.strip())
+    print("票房：",pingfen.strip())
+    print("播放量：",bofang.strip())
 
 
 if __name__ == '__main__':
