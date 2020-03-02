@@ -91,7 +91,7 @@ def getContent(url):
     addrdata=dict(getAddrMapping(url))
     addrdata.update(numdata)
     html=requests.get(url,headers=heard).text
-    print(html)
+
     for k, v in addrdata.items():
         html = html.replace(k+";", v)
     soup = BeautifulSoup(html, "lxml")
