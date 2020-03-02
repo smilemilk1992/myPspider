@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import sys
+sys.path.append("..")
 import json
 from xml.dom.minidom import parse
 import xmltodict
@@ -89,7 +91,7 @@ def getContent(url):
     woff=html[html.find("embedded-opentype")+39:html.find("'woff'")-10]
     wofflink = 'http://' + woff
     r = requests.get(wofflink, headers=heard)
-    with open('tt.woff', "wb") as f:
+    with open('../maoyan/tt.woff', "wb") as f:
         f.write(r.content)
     f.close()
     font1 = TTFont('tt.woff')  # 读取woff文件
