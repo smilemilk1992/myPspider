@@ -4,4 +4,6 @@
 
 ## 汽车之家字体加密破解--autoHome  
 
-## 大众点评字体加密破解--dzdp 
+## 大众点评字体加密woff文件破解--dzdp_woff 
+
+## 大众点评字体加密svg文件破解--dzdp_svg 

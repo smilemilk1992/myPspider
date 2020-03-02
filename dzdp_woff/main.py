@@ -13,7 +13,7 @@ heard={
 }
 #获取已知字体字典
 def getDict():
-    with open('../dzdp/jsonFile', "r",encoding='utf8') as f:
+    with open('../dzdp_woff/jsonFile', "r",encoding='utf8') as f:
         json_data = json.load(f)
         return json_data
 
@@ -40,7 +40,7 @@ def getNumMapping(url):
     json_data=getDict()
     woff = getNumWoff(url)
     rs=requests.get(woff)
-    with open('../dzdp/numTest.woff', "wb") as f:
+    with open('../dzdp_woff/numTest.woff', "wb") as f:
         f.write(rs.content)
     f.close()
     font = TTFont('numTest.woff')  # 读取woff文件
@@ -65,7 +65,7 @@ def getAddrMapping(url):
     json_data = getDict()
     woff = getAddrWoff(url)
     rs = requests.get(woff)
-    with open('../dzdp/addrTest.woff', "wb") as f:
+    with open('../dzdp_woff/addrTest.woff', "wb") as f:
         f.write(rs.content)
     f.close()
     font = TTFont('addrTest.woff')  # 读取woff文件
