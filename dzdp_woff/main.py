@@ -57,6 +57,7 @@ def getNumMapping(url):
             position=data["position"]
             if position==coordinates and data["word"] in ['0','1','2','3','4','5','6','7','8','9']:
                 res[value.replace("uni","&#x")]=data["word"]
+    print("getNumMapping", res)
     return res
 
 #获取地址mapping关系
@@ -82,14 +83,16 @@ def getAddrMapping(url):
             position = data["position"]
             if position == coordinates and data["word"] not in ['','0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
                 res[value.replace("uni", "&#x")] = data["word"]
+    print("getAddrMapping",res)
     return res
 
 def getContent(url):
-    numdata=dict(getNumMapping(url))
-    addrdata=getAddrMapping(url)
-    numdata.update(addrdata)
+    numdata=getNumMapping(url)
+    addrdata=dict(getAddrMapping(url))
+    addrdata.update(numdata)
     html=requests.get(url,headers=heard).text
-    for k, v in numdata.items():
+    print(html)
+    for k, v in addrdata.items():
         html = html.replace(k+";", v)
     soup = BeautifulSoup(html, "lxml")
     shopAll=soup.find("div",{"id":"shop-all-list"}).find_all("div",{"class":"txt"})
