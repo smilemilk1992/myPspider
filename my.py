@@ -120,7 +120,7 @@ def getContent(url):
     if htmltxet.find("div",attrs={"class":"movie-index-content box"}) != None:
         bofang=htmltxet.find("div",attrs={"class":"movie-index-content box"}).text
     else:
-        pioafang = '暂无'
+        bofang = '暂无'
     print("票房：",pingfen.strip())
     print("播放量：",bofang.strip())
 
