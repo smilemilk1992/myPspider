@@ -84,7 +84,6 @@ x2=th1("tt.xml")
 data={}
 for k,v in x2.items():
     aa=[x["@on"] for x in v]
-    print(aa)
     for i in v:
         for k1,v1 in x1.items():
             bb = [y["@on"] for y in v1]
@@ -93,7 +92,31 @@ for k,v in x2.items():
                 # print("===",aa)
                 data[k] = k1
                 break
+            c=[]
+            for ii,a in enumerate(aa):
+                for jj,b in enumerate(bb):
+                    if ii==jj and a!=b:
+                        c.append(1)
+            if len(c)<=1:
+                data[k] = k1
+                break
+
             if aa[:len(bb)]== bb or bb[:len(aa)] == aa:#防止出现子集
+                data[k] = k1
+                break
+            if len(aa)%2==0:
+                aaS=aa[:(len(aa)//2)-1]
+                aaE=aa[(len(aa)//2)+1:]
+            else:
+                aaS = aa[:len(aa) // 2]
+                aaE = aa[(len(aa) // 2) + 1:]
+            if len(bb)%2==0:
+                bbS=bb[:(len(bb)//2)-1]
+                bbE=bb[(len(bb)//2)+1:]
+            else:
+                bbS = bb[:len(bb) // 2]
+                bbE = bb[(len(bb) // 2) + 1:]
+            if aaE==bbE or aaS==bbS:
                 data[k] = k1
                 break
             for ii in v1:
@@ -102,3 +125,7 @@ for k,v in x2.items():
                     break
 
 print(data)
+a = [1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1]
+b = [1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1]
+print(a[:(len(a)//2)-1],a[(len(a)//2)+1:])
+print(b[:len(b) // 2], b[len(b) // 2 + 1:])

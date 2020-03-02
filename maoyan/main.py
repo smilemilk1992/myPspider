@@ -28,6 +28,7 @@ def mapping(xmlFile=None):
             list = v.get('cmap_format_4')
         if k == 'glyf':
             list1 = v.get('TTGlyph')
+
     ysbm = {}
     for i in list:
         if i['@platEncID'] == '3':
@@ -74,10 +75,33 @@ def mapRelation(s,ss):
         for i in v:
             for k1,v1 in ss.items():
                 bb = [y["@on"] for y in v1]
-                if aa == bb or len(set(aa))==len(set(bb))==1: #防止出现相同
-                    data[k] = k1
-                    break
-                if aa[:len(bb)] == bb or bb[:len(aa)] == aa:  # 防止出现子集
+                # if aa == bb or len(set(aa))==len(set(bb))==1: #防止出现相同
+                #     data[k] = k1
+                #     break
+                # if aa[:len(bb)] == bb or bb[:len(aa)] == aa:  # 防止出现子集
+                #     data[k] = k1
+                #     break
+                # c = []
+                # for ii, a in enumerate(aa):
+                #     for jj, b in enumerate(bb):
+                #         if ii == jj and a != b:
+                #             c.append(1)
+                # if len(c) <= 1:
+                #     data[k] = k1
+                #     break
+                if len(aa) % 2 == 0:
+                    aaS = aa[:(len(aa) // 2) - 1]
+                    aaE = aa[(len(aa) // 2) + 1:]
+                else:
+                    aaS = aa[:len(aa) // 2]
+                    aaE = aa[(len(aa) // 2) + 1:]
+                if len(bb) % 2 == 0:
+                    bbS = bb[:(len(bb) // 2) - 1]
+                    bbE = bb[(len(bb) // 2) + 1:]
+                else:
+                    bbS = bb[:len(bb) // 2]
+                    bbE = bb[(len(bb) // 2) + 1:]
+                if aaE == bbE or aaS == bbS:
                     data[k] = k1
                     break
                 for ii in v1:
@@ -128,6 +152,9 @@ def getContent(url):
 
 
 if __name__ == '__main__':
-    getContent("https://maoyan.com/films/1277939")
+    # while True:
+        getContent("https://maoyan.com/films/1277939")
+    # pass
+
 
 
