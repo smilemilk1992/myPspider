@@ -5,7 +5,7 @@ font_size = 14
 start_y = 23
 heard={
     'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36",
-    'Cookie': '_lxsdk_cuid=16ea7ff0adcc8-0d1067849a6dba-3963720f-13c680-16ea7ff0adcb0; _lxsdk=16ea7ff0adcc8-0d1067849a6dba-3963720f-13c680-16ea7ff0adcb0; _hc.v=4878cd03-04cb-0b3c-d4b4-805f9c1b034b.1574776541; ctu=33e63b010c1df6f33e3453754299bdc73ec1478bd1f9ebb0702492eae3e72ec0; s_ViewType=10; _dp.ac.v=d404491d-8772-45dc-80d2-5f5ac17a9825; ua=smilemilk; cy=2; cye=beijing; _lxsdk_s=1709a6181b4-678-8b7-6da%7C%7C41',
+    'Cookie': '_lxsdk_cuid=16ea7ff0adcc8-0d1067849a6dba-3963720f-13c680-16ea7ff0adcb0; _lxsdk=16ea7ff0adcc8-0d1067849a6dba-3963720f-13c680-16ea7ff0adcb0; _hc.v=4878cd03-04cb-0b3c-d4b4-805f9c1b034b.1574776541; ctu=33e63b010c1df6f33e3453754299bdc73ec1478bd1f9ebb0702492eae3e72ec0; s_ViewType=10; _dp.ac.v=d404491d-8772-45dc-80d2-5f5ac17a9825; ua=smilemilk; cy=2; cye=beijing; _lxsdk_s=170a4e26289-7e6-bca-411%7C%7C148',
     'Accept-Language':'zh-CN,zh;q=0.9',
     'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
 }
@@ -16,6 +16,7 @@ def getCss(url):
 
 def getSvg(url):
     css = getCss(url)
+    print(css)
     rs=requests.get(css)
     svg="http:"+re.search("width: 14px;height: 24px.*?url\((.*?)\)",rs.text).group(1)
     return svg
@@ -25,11 +26,21 @@ def getSvgDict(url):
     svg=getSvg(url)
     html=requests.get(svg).text
     font_list = re.findall(r'<text.*?y="(.*?)">(.*?)<', html)
-    for y,string in font_list:
-        y_offset=start_y-int(y)
-        for j,font in enumerate(string):
-            x_offset=-j*font_size
-            font_dict[(x_offset,y_offset)]=font
+    if font_list:
+        for y,string in font_list:
+            y_offset=start_y-int(y)
+            for j,font in enumerate(string):
+                x_offset=-j*font_size
+                font_dict[(x_offset,y_offset)]=font
+    else:
+        ids = re.findall('d="M0 (\d+)', html)
+        strings = re.findall('<textPath.*?>(.*?)</textPath>', html)
+        for i, s in enumerate(strings):
+            y_offset = start_y - int(ids[i])
+            for j, font in enumerate(s):
+                x_offset = -j * font_size
+                font_dict[(x_offset, y_offset)] = font
+    print(font_dict)
     return font_dict
 
 
@@ -39,12 +50,11 @@ def getFontDict(url):
     svgDict=getSvgDict(url)
     css=getCss(url)
     rs=requests.get(css).text
-    group_offset_list=re.findall(r'\.([a-zA-Z0-9]{5,6}).*?round:(.*?)px (.*?)px;', rs)
+    group_offset_list=re.findall(r'}\.(.*?){background:(.*?)px (.*?)px;', rs)
     for class_name, x_offset, y_offset in group_offset_list:
         x_offset = x_offset.replace('.0', '')
         y_offset = y_offset.replace('.0', '')
         font_dict[class_name]=svgDict.get((int(x_offset),int(y_offset)))
-
     return font_dict
 
 def getContent(url):
