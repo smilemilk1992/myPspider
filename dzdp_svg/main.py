@@ -1,17 +1,23 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+from Util import htmlFilter
+import time
+from faker import Faker
+
+f=Faker()
+
 font_size = 14
 start_y = 23
 heard={
-    'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36",
-    'Cookie': '_lxsdk_cuid=16ea7ff0adcc8-0d1067849a6dba-3963720f-13c680-16ea7ff0adcb0; _lxsdk=16ea7ff0adcc8-0d1067849a6dba-3963720f-13c680-16ea7ff0adcb0; _hc.v=4878cd03-04cb-0b3c-d4b4-805f9c1b034b.1574776541; ctu=33e63b010c1df6f33e3453754299bdc73ec1478bd1f9ebb0702492eae3e72ec0; s_ViewType=10; _dp.ac.v=d404491d-8772-45dc-80d2-5f5ac17a9825; ua=smilemilk; cy=2; cye=beijing; _lxsdk_s=170a4e26289-7e6-bca-411%7C%7C148',
+    'User-Agent': f.firefox(),
+    'Cookie': 's_ViewType=10; _lxsdk_cuid=16ea11c8431c8-0046e2d1e0e96a-2393f61-100200-16ea11c8433c8; _lxsdk=16ea11c8431c8-0046e2d1e0e96a-2393f61-100200-16ea11c8433c8; _hc.v=dd5a298b-2260-8d93-ce47-9695be84968f.1574661031; ctu=e7a9e6da10443310ad7c3c9e9e3ee21f692f377118c84c4642124a63f73e0957; ua=smilemilk; cy=2; cye=beijing; Hm_lvt_602b80cf8079ae6591966cc70a3940e7=1591693148; lgtoken=05dd729b3-b4f5-4ecc-b297-ee4afc1b1701; dplet=e38895d9069a72a2f942fcc4628cc8d1; dper=00e58557a1d538cede3f9b62381f48d961cadf03b06090643443659d1fea5fadc68b07f3a3eea488c91f587fac98ea54926a50f3312797199bd7583ce29f9838daf4771cd377721e1e99209eb45cccd50cdd0c3f7460f43e0cb0fa8a6bb1929f; ll=7fd06e815b796be3df069dec7836c3df; Hm_lpvt_602b80cf8079ae6591966cc70a3940e7=1591693188; _lxsdk_s=172984df175-bfb-ac6-8de%7C%7C316',
     'Accept-Language':'zh-CN,zh;q=0.9',
     'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
 }
 def getCss(url):
     rs=requests.get(url,headers=heard)
-    css="http:"+re.search("//s3plus.sankuai.com/v1/.*?\.css",rs.text).group(0)
+    css="http:"+re.search("//s3plus.meituan.net/v1/.*?\.css",rs.text).group(0)
     return css
 
 def getSvg(url):
@@ -62,7 +68,9 @@ def getContent(url):
     rs=requests.get(url,headers=heard)
     soup=BeautifulSoup(rs.text,"lxml")
     lis=soup.find_all(attrs={"class":re.compile("review-words")})
+    i=0
     for li in lis:
+        i=i+1
         ct = re.split('"></svgmtsi><svgmtsi class="|"></svgmtsi><svgmtsi class="|<svgmtsi class="|"></svgmtsi>|<div class="review-words.*?">', str(li))
         ct = [x.strip().replace("\n", "") for x in ct if x.strip().replace("\n", "")]
         st=""
@@ -71,7 +79,14 @@ def getContent(url):
                 st=st+font_dict[c]
             else:
                 st=st+c
-        print(st)
+        result=htmlFilter.filters(st)
+        print(str(i)+"、"+result)
+        with open("dzdp_comments.txt",'a',encoding="utf-8") as f:
+            f.write(result+"\n")
+        # print(st)
 
 if __name__ == '__main__':
-    getContent("http://www.dianping.com/shop/4208148/review_all")
+    for i in range(1,115):
+        print("~~~~~~~~~~~~~第{}页~~~~~~~~~~~~~~~~~".format(i))
+        time.sleep(10)
+        getContent("http://www.dianping.com/shop/98408264/review_all/p{}".format(i))
