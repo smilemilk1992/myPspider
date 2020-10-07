@@ -7,12 +7,14 @@ from xml.dom.minidom import parse
 import xmltodict
 from fontTools.ttLib import TTFont
 import requests
+import re
 from bs4 import BeautifulSoup
 
 heard={
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36',
-    'Accept':"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-    "Accept-Language":"zh-CN,zh;q=0.9"
+    'Accept':"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    "Accept-Language":"zh-CN,zh;q=0.9",
+    "Cookie":"__mta=149208329.1602057328429.1602057805335.1602058231797.6; uuid_n_v=v1; uuid=719A1770087211EBA1A7D5F8AE217AFCA0E7263D83264BD99B5395B2A7753889; _csrf=fc979134b15c6dbb096cb6a9ecef7f88eef22186f3d990c0226beeeaccd08142; _lx_utm=utm_source%3DBaidu%26utm_medium%3Dorganic; _lxsdk_cuid=175020ecd114-03d9ff5eee2f3c-333376b-100200-175020ecd12c8; _lxsdk=719A1770087211EBA1A7D5F8AE217AFCA0E7263D83264BD99B5395B2A7753889; Hm_lvt_703e94591e87be68cc8da0da7cbd0be2=1602057328; __mta=149208329.1602057328429.1602057344929.1602057347977.4; Hm_lpvt_703e94591e87be68cc8da0da7cbd0be2=1602058231; _lxsdk_s=175020ecd13-85a-317-79b%7C%7C16"
 }
 
 def mapping(xmlFile=None):
@@ -112,8 +114,12 @@ def mapRelation(s,ss):
 
 def getContent(url):
     html = requests.get(url, headers=heard).text
-    woff=html[html.find("embedded-opentype")+39:html.find("'woff'")-10]
-    wofflink = 'http://' + woff
+    # woff=html[html.find("embedded-opentype")+39:html.find("'woff'")-10]
+    # wofflink = 'http://' + woff
+    # wofflink="http://vfile.meituan.net/colorstone/66a0b32ae3f15c63dc89d4868f61d22e2284.woff"
+    woff = re.search("//vfile.*?\.woff",html).group(0)
+    wofflink = 'http:' + woff
+    print(wofflink)
     r = requests.get(wofflink, headers=heard)
     with open('../maoyan/tt.woff', "wb") as f:
         f.write(r.content)
@@ -124,7 +130,7 @@ def getContent(url):
     for k ,v in data.items():
         # print(k,v)
         html=html.replace("&#"+k+";",v)
-
+    print(data.items())
     htmltxet = BeautifulSoup(html, "html.parser")
     title=htmltxet.find("h1",attrs={"class":"name"}).text.strip()
     type=" ".join([x.get_text().strip() for x in htmltxet.find_all("a",attrs={"class":"text-link"})])
